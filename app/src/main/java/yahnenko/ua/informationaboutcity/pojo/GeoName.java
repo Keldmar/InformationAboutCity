@@ -1,9 +1,9 @@
-package yahnenko.ua.informationaboutcity.response;
+package yahnenko.ua.informationaboutcity.pojo;
 
 
 import java.io.Serializable;
 
-public class Geonames implements Serializable{
+public class GeoName implements Serializable {
     public String summary;
     public Integer elevation;
     public Integer geoNameId;

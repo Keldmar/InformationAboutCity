@@ -10,23 +10,20 @@ import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-import yahnenko.ua.informationaboutcity.DownloadCountries;
-import yahnenko.ua.informationaboutcity.SearchByCity;
-import yahnenko.ua.informationaboutcity.response.GetCity;
+import yahnenko.ua.informationaboutcity.pojo.City;
 
 public class ApiManager {
-    private final String URL = "http://api.geonames.org/";
-    private final String USERNAME = "keldmar ";
+    private static final String URL = "http://api.geonames.org/";
+    private static final String USERNAME = "keldmar ";
 
-    private SearchByCity serviceSearch;
-    private DownloadCountries serviceCountries;
+    private WikipediaService serviceSearch;
+    private CountriesService serviceCountries;
 
     public ApiManager() {
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
         logging.setLevel(HttpLoggingInterceptor.Level.BODY);
         OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
         httpClient.addInterceptor(logging);
-
 
         Retrofit retrofit = new Retrofit.Builder()
                 .addConverterFactory(GsonConverterFactory.create(new GsonBuilder().create()))
@@ -39,14 +36,15 @@ public class ApiManager {
                 .addConverterFactory(GsonConverterFactory.create(new GsonBuilder().create()))
                 .build();
 
-        serviceSearch = retrofit.create(SearchByCity.class);
-        serviceCountries = retrofit2.create(DownloadCountries.class);
+        serviceSearch = retrofit.create(WikipediaService.class);
+        serviceCountries = retrofit2.create(CountriesService.class);
     }
-    public Call<GetCity> getCity (String cityname){
+
+    public Call<City> getCity(String cityname) {
         return serviceSearch.getCity(cityname, USERNAME);
     }
 
-    public Call<Map<String, List<String>>> getCountries (){
+    public Call<Map<String, List<String>>> getCountries() {
         return serviceCountries.getCountries();
     }
 }

@@ -3,31 +3,33 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:layout_margin="4dp"
-    tools:context="yahnenko.ua.informationaboutcity.MainActivity">
+    android:orientation="vertical"
+    tools:context="yahnenko.ua.informationaboutcity.activity.MainActivity">
+
     <android.support.v7.widget.Toolbar
-        android:layout_width="match_parent"
         android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:elevation="4dp"
-        android:layout_height="wrap_content">
-    </android.support.v7.widget.Toolbar>
+        tools:targetApi="lollipop" />
 
     <Spinner
+        android:id="@+id/sppiner_Countries"
         android:layout_width="match_parent"
-        android:layout_margin="16dp"
         android:layout_height="wrap_content"
-        android:id="@+id/sppiner_Countries">
-    </Spinner>
+        android:layout_margin="16dp"/>
+
     <Spinner
+        android:id="@+id/sppiner_City"
         android:layout_width="match_parent"
-        android:layout_margin="16dp"
         android:layout_height="wrap_content"
-        android:id="@+id/sppiner_City">
-    </Spinner>
+        android:layout_margin="16dp"/>
+
     <Button
+        android:id="@+id/search"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/search"
-        android:text="go"/>
+        android:text="@string/search" />
+
 </LinearLayout>

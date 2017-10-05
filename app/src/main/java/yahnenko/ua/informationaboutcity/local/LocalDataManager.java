@@ -1,4 +1,4 @@
-package yahnenko.ua.informationaboutcity;
+package yahnenko.ua.informationaboutcity.local;
 
 
 import android.content.SharedPreferences;
@@ -26,6 +26,5 @@ public class LocalDataManager {
         editor.putString(KEY_CITY, new Gson().toJson(map));
         editor.apply();
     }
-
 
 }

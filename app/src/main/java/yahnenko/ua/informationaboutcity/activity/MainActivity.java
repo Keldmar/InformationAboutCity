@@ -1,9 +1,8 @@
-package yahnenko.ua.informationaboutcity;
+package yahnenko.ua.informationaboutcity.activity;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -21,71 +20,71 @@ import java.util.Map;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import yahnenko.ua.informationaboutcity.response.GetCity;
+import yahnenko.ua.informationaboutcity.InformAboutCityApplication;
+import yahnenko.ua.informationaboutcity.R;
+import yahnenko.ua.informationaboutcity.pojo.City;
 
 import static yahnenko.ua.informationaboutcity.InformAboutCityApplication.getLocalDataManager;
 
 public class MainActivity extends AppCompatActivity {
 
-    private Button goSearch;
-    SharedPreferences sp;
     Spinner spinnerCountries;
     Spinner spinnerCity;
     String selectedCountries;
-    String selecedCity;
+    String selectedCity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        goSearch = (Button) findViewById(R.id.search);
-        sp = PreferenceManager.getDefaultSharedPreferences(this);
+        Button goSearch = (Button) findViewById(R.id.search);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-        getSupportActionBar().setTitle("select country and city");
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setTitle(R.string.select_country);
+        }
 
         if (InformAboutCityApplication.getLocalDataManager().getCountries() == null) {
-
             InformAboutCityApplication.getApiManager().getCountries().enqueue(new Callback<Map<String, List<String>>>() {
                 @Override
                 public void onResponse(Call<Map<String, List<String>>> call, Response<Map<String, List<String>>> response) {
-
                     getLocalDataManager().setCountries(response.body());
-                    addItemsOnSpinnerOne();
+                    addCountriesOnSpinner();
                 }
 
                 @Override
                 public void onFailure(Call<Map<String, List<String>>> call, Throwable t) {
-                    Toast.makeText(getApplicationContext(), "No response from the server, check the Internet connection", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, R.string.no_connection, Toast.LENGTH_SHORT).show();
                 }
             });
         } else {
-            addItemsOnSpinnerOne();
+            addCountriesOnSpinner();
         }
         goSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                InformAboutCityApplication.getApiManager().getCity(selecedCity).enqueue(new Callback<GetCity>() {
+                InformAboutCityApplication.getApiManager().getCity(selectedCity).enqueue(new Callback<City>() {
                     @Override
-                    public void onResponse(Call<GetCity> call, Response<GetCity> response) {
-                        GetCity geoInfo = response.body();
+                    public void onResponse(Call<City> call, Response<City> response) {
+                        City geoInfo = response.body();
                         Intent intent = new Intent(MainActivity.this, InformationActivity.class);
-                        intent.putExtra("key", geoInfo);
+                        intent.putExtra(InformationActivity.KEY_CITY, geoInfo);
                         startActivity(intent);
                     }
 
                     @Override
-                    public void onFailure(Call<GetCity> call, Throwable t) {
-                        Toast.makeText(getApplicationContext(), "No response from the server, check the Internet connection", Toast.LENGTH_SHORT).show();
+                    public void onFailure(Call<City> call, Throwable t) {
+                        Toast.makeText(MainActivity.this, R.string.no_connection, Toast.LENGTH_SHORT).show();
                     }
                 });
             }
         });
     }
 
-    public void addItemsOnSpinnerOne() {
+    public void addCountriesOnSpinner() {
         spinnerCountries = (Spinner) findViewById(R.id.sppiner_Countries);
         List<String> list = new ArrayList<String>();
         Iterator it = getLocalDataManager().getCountries().entrySet().iterator();
@@ -104,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 selectedCountries = spinnerCountries.getSelectedItem().toString();
-                addItemsOnSpinnerTwo(selectedCountries);
+                addCitiesOnSpinnerByCountry(selectedCountries);
             }
 
             @Override
@@ -114,19 +113,18 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void addItemsOnSpinnerTwo(String nameCity) {
+    private void addCitiesOnSpinnerByCountry(String nameCity) {
         spinnerCity = (Spinner) findViewById(R.id.sppiner_City);
         List<String> list = new ArrayList<String>();
         list.addAll(InformAboutCityApplication.getLocalDataManager().getCountries().get(nameCity));
-        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_spinner_item, list);
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, list);
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerCity.setAdapter(dataAdapter);
 
         spinnerCity.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                selecedCity = spinnerCity.getSelectedItem().toString();
+                selectedCity = spinnerCity.getSelectedItem().toString();
             }
 
             @Override
